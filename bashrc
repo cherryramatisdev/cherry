@@ -42,6 +42,9 @@ export FZF_DEFAULT_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --e
 export FZF_CTRL_T_COMMAND='fd --type f --strip-cwd-prefix --hidden --follow --exclude .git'
 export FZF_DEFAULT_OPTS='--bind ctrl-u:preview-up,ctrl-d:preview-down'
 
+[[ -f ~/.fzf.bash ]] && source ~/.fzf.bash
+[[ -f "/Users/cherry/Scripts/fzf-git" ]] && source "/Users/cherry/Scripts/fzf-git"
+
 # golang
 export GOBIN="$HOME/go/bin"
 export GOCACHE=$HOME/.cache/go-build
@@ -103,8 +106,6 @@ esac
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH=$BUN_INSTALL/bin:$PATH
-
-[ -f "/Users/cherry/Scripts/fzf-git" ] && source "/Users/cherry/Scripts/fzf-git" # fzf-git
 
 alias b='bundle'
 alias ba='bundle add'
