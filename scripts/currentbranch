@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [ -d .git ] || git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+    echo "$(git branch --show-current)"
+else
+    echo ""
+fi

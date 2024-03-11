@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+path="$(fzf)"
+
+if [[ "$path" != "" ]]; then
+  $EDITOR $path
+fi
+
+echo "No file selected"

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if jq -e '.["lint-staged"]' package.json >/dev/null 2>&1; then 
+    if yarn lint; then
+        git commit --no-verify -v "$@"
+        exit 0
+    fi
+fi
+
+git commit -v $@

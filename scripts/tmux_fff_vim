@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# This let @+ syntax send to clipboard
+tmux send-keys ":let @+ = expand('%:h')" Enter
+tmux display-popup -E -w 90% -h 90% "fff $(pbpaste)"

@@ -1,0 +1,335 @@
+" vim: fdm=marker foldenable sw=2 ts=2 sts=2
+
+let mapleader = ' '
+
+set nocompatible
+
+syntax enable
+" set termguicolors
+filetype plugin on
+
+" Settings {{{
+" Fuzzy Finder
+set path+=**
+set wildoptions=fuzzy,pum,tagfile
+set wildmenu
+set wildignore=**/node_modules/**,**/dist/**,**/.git/**
+set noswapfile
+set nobackup
+set history=500
+set hidden
+if exists("&undofile")
+  set undofile
+  set undodir=/etc/vimundo
+endif
+" set foldenable
+" set foldmethod=syntax
+set ignorecase smartcase
+set showcmd ruler laststatus=2
+set splitright splitbelow
+set listchars=trail:.,tab:>-,extends:>,precedes:<,nbsp:¬
+set list
+
+set autoindent
+set expandtab
+
+" Typing behavior
+set backspace=indent,eol,start
+set showmatch
+set wildmode=full
+set wildmenu
+set complete-=i
+set completeopt=menuone,menu,preview,popup,noinsert
+set shortmess+=c   " Shut off completion messages
+set belloff+=ctrlg " Add only if Vim beeps during completion
+" }}}
+
+" Mappings {{{
+nmap Y y$
+
+vnoremap < <gv
+vnoremap > >gv
+
+nnoremap <leader>y "+y
+nnoremap <leader>Y "+y$
+vnoremap <leader>y "+y
+" }}}
+
+" Plugin Manager
+if !exists('data_dir')
+  const data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+endif
+
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.local/share/vim_plugins')
+" {{{Autocompletion
+Plug 'lifepillar/vim-mucomplete'
+let g:mucomplete#enable_auto_at_startup = 1
+let g:mucomplete#chains = {}
+let g:mucomplete#chains['default'] = {
+      \              'default': ['list',  'omni',  'path',  'c-n',   'uspl'],
+      \              '.*string.*': ['uspl'],
+      \              '.*comment.*': ['uspl']
+      \            }
+" }}}
+" {{{ Fuzzy finding
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+nnoremap <c-p> :FZF<cr>
+" }}}
+" {{{Syntax highlight
+Plug 'elixir-editors/vim-elixir'
+Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'HerringtonDarkholme/yats.vim'
+Plug 'pangloss/vim-javascript'
+Plug 'prisma/vim-prisma'
+Plug 'vim-ruby/vim-ruby'
+let ruby_operators = 1
+let ruby_pseudo_operators = 1
+let ruby_space_errors = 1
+let ruby_line_continuation_error = 1
+let ruby_global_variable_error   = 1
+
+au BufRead,BufNewFile *.ex,*.exs set filetype=elixir
+au BufRead,BufNewFile *.eex,*.heex,*.leex,*.sface,*.lexs set filetype=eelixir
+au BufRead,BufNewFile mix.lock set filetype=elixir
+" }}}
+" {{{ Misc
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+Plug 'bogado/file-line'
+Plug 'andlrc/CTRLGGitBlame.vim'
+Plug 'dhruvasagar/vim-dotoo'
+let g:dotoo#agenda#files = ['~/Repos/grimoire/modules/home-manager/settings/vimfiles/dotoo/*.dotoo']
+let g:dotoo#capture#refile = expand('~/Repos/grimoire/modules/home-manager/settings/vimfiles/dotoo/refile.dotoo')
+let g:dotoo#capture#templates = {
+      \ 't': {
+      \   'description': 'Todo',
+      \   'lines': [
+      \     '* TODO %?',
+      \     'DEADLINE: [%(strftime(g:dotoo#time#datetime_format))]',
+      \     '[[%(expand("%:p").":".line("."))]]',
+      \   ],
+      \  'target': 'refile',
+      \  'clock': 1,
+      \ },
+      \ 'n': {
+      \   'description': 'Note',
+      \   'lines': ['* %? :NOTE:'],
+      \ },
+      \ 'j': {
+      \   'description': 'Journal Entry',
+      \   'lines': [ '* %?' ],
+      \   'target': 'notes/diary/$(strftime(g:dotoo#time#date_format)).dotoo',
+      \   'append': 1,
+      \ },
+      \ 'm': {
+      \   'description': 'Meeting',
+      \   'lines': ['* MEETING with %? :MEETING:'],
+      \   'clock': 1,
+      \ },
+      \ 'p': {
+      \   'description': 'Phone call',
+      \   'lines': ['* PHONE %? :PHONE:'],
+      \ },
+      \ 'h': {
+      \   'description': 'Habit',
+      \   'lines': [
+      \     '* NEXT %?',
+      \     'SCHEDULED: [%(strftime(g:dotoo#time#date_day_format)) +1m]',
+      \     ':PROPERTIES:',
+      \     ':STYLE: habit',
+      \     ':REPEAT_TO_STATE: NEXT',
+      \     ':END:'
+      \   ]
+      \ }
+      \}
+
+Plug 'mileszs/ack.vim'
+cnoreabbrev <expr> grep (getcmdtype() ==# ':' && getcmdline() ==# 'grep')  ? 'Ack'  : 'grep'
+if executable('rg')
+  set grepprg=rg\ --vimgrep
+  let g:ackprg = 'rg --vimgrep'
+endif
+
+Plug 'tpope/vim-dadbod'
+Plug 'kristijanhusak/vim-dadbod-ui'
+" }}}
+" File management {{{
+Plug 'justinmk/vim-dirvish'
+
+Plug 'AndrewRadev/andrews_nerdtree.vim'
+let g:andrews_nerdtree_all = 1
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if winnr() == winnr('h') && bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+      \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+Plug 'preservim/nerdtree'
+nnoremap <leader><space> <cmd>NERDTreeToggle<cr>
+nnoremap <leader><tab> <cmd>NERDTreeFind<cr>
+" }}}
+" {{{lsp & debugging
+Plug 'dense-analysis/ale'
+
+let g:ale_fixers = {
+      \ '*': ['remove_trailing_lines', 'trim_whitespace'],
+      \ 'javascript': ['prettier'],
+      \ 'javascriptreact': ['prettier'],
+      \ 'typescript': ['prettier'],
+      \ 'typescriptreact': ['prettier'],
+      \ 'ruby': ['rubocop'],
+      \ 'ocaml': ['ocamlformat'],
+      \ 'rust': ['rustfmt'],
+      \ 'elixir': ['mix_format']
+      \}
+
+let g:ale_elixir_lexical_release=expand('~/.local/share/lexical/bin')
+let g:ale_linters = {
+      \ 'javascript': ['tsserver', 'eslint'],
+      \ 'javascriptreact': ['tsserver', 'eslint'],
+      \ 'typescript': ['tsserver', 'eslint'],
+      \ 'typescriptreact': ['tsserver', 'eslint'],
+      \ 'ruby': ['sorbet'],
+      \ 'ocaml': ['ocamllsp'],
+      \ 'rust': ['rust_analyzer'],
+      \ 'elixir': ['lexical'],
+      \ 'php': ['intelephense']
+      \}
+
+let g:ale_fix_on_save = 1
+let g:ale_virtualtext_cursor='current'
+
+function! s:on_lsp_buffer_enabled() abort
+  hi! ALEWarning ctermbg=NONE cterm=underline ctermfg=lightyellow
+
+  setlocal omnifunc=ale#completion#OmniFunc
+  setlocal signcolumn=yes
+  " if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+  nmap <buffer> <c-]> <cmd>ALEGoToDefinition<cr>
+  nmap <buffer> gd <cmd>ALEGoToDefinition<cr>
+  nmap <buffer> <c-w>] <c-w>v<cmd>ALEGoToDefinition<cr>
+  nmap <buffer> gR <cmd>ALEFindReferences -quickfix<cr>
+  nmap <buffer> gI <cmd>ALEGoToImplementation<cr>
+  nmap <buffer> <leader>rn <cmd>ALERename<cr>
+  nmap <buffer> [d <cmd>ALEPrevious<cr>
+  nmap <buffer> ]d <cmd>ALENext<cr>
+  nmap <buffer> K <cmd>ALEHover<cr>
+  nmap <buffer> ga <cmd>ALECodeAction<cr>
+  xmap <buffer> ga <cmd>ALECodeAction<cr>
+endfunction
+
+call execute('autocmd FileType '.g:ale_linters->keys()->join(',').' call s:on_lsp_buffer_enabled()')
+
+Plug 'puremourning/vimspector'
+nnoremap <Leader>dd :call vimspector#Launch()<CR>
+nnoremap <Leader>de :call vimspector#Reset()<CR>
+nnoremap <Leader>dc :call vimspector#Continue()<CR>
+
+nnoremap <Leader>db :call vimspector#ToggleBreakpoint()<CR>
+nnoremap <Leader>dB :call vimspector#ClearBreakpoints()<CR>
+
+nmap <Leader>dk <Plug>VimspectorRestart
+nmap <Leader>dh <Plug>VimspectorStepOut
+nmap <Leader>dl <Plug>VimspectorStepInto
+nmap <Leader>dj <Plug>VimspectorStepOver
+" }}}
+" {{{ colors
+Plug 'skywind3000/vim-color-patch'
+let g:cpatch_path = '~/.vim/colors/patch'
+Plug 'srcery-colors/srcery-vim'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'chriskempson/base16-vim'
+" let g:theme_sync_disable_timer = 1
+" let g:theme_sync_light_colorscheme = 'EmacsLight'
+" let g:theme_sync_dark_colorscheme = 'srcery'
+" Plug 'cherryramatisdev/theme-sync.vim'
+" }}}
+" {{{ tpope
+Plug 'tpope/vim-fugitive' | Plug 'tpope/vim-rhubarb'
+Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-scriptease'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-sleuth'
+Plug 'tpope/vim-dispatch'
+" }}}
+" {{{Andrew Radev
+Plug 'AndrewRadev/qftools.vim'
+Plug 'AndrewRadev/switch.vim'
+Plug 'AndrewRadev/undoquit.vim'
+Plug 'AndrewRadev/deleft.vim'
+Plug 'AndrewRadev/sideways.vim'
+nnoremap gh :SidewaysLeft<cr>
+nnoremap gl :SidewaysRight<cr>
+omap aa <Plug>SidewaysArgumentTextobjA
+xmap aa <Plug>SidewaysArgumentTextobjA
+omap ia <Plug>SidewaysArgumentTextobjI
+xmap ia <Plug>SidewaysArgumentTextobjI
+" }}}
+" {{{ ruby/rails stuff
+Plug 'tpope/vim-rails'
+" }}}
+" {{{ laravel stuff
+Plug 'tpope/vim-projectionist'
+Plug 'noahfrederick/vim-composer'
+Plug 'noahfrederick/vim-laravel'
+" }}}
+" {{{ ctags integration
+Plug 'ludovicchabant/vim-gutentags'
+Plug 'preservim/tagbar'
+nnoremap <leader>ot <cmd>TagbarToggle<cr>
+" }}}
+" {{{ undotree
+Plug 'mbbill/undotree'
+nnoremap <leader>u <cmd>UndotreeToggle<cr>
+" }}}
+" {{{ocaml
+Plug 'ocaml/vim-ocaml'
+" }}}
+" {{{ Tests
+Plug 'vim-test/vim-test'
+let test#strategy = "dispatch"
+nmap <silent> <leader>t :TestNearest<CR>
+nmap <silent> <leader>T :TestFile<CR>
+nmap <silent> <leader>a :TestSuite<CR>
+nmap <silent> <leader>l :TestLast<CR>
+nmap <silent> <leader>g :TestVisit<CR>
+" }}}
+" {{{ My plugins
+Plug 'cherryramatisdev/windows.vim'
+Plug 'cherryramatisdev/transform-html-to-styled-components.vim'
+Plug 'cherryramatisdev/fuzzy.vim'
+let g:fuzzy_binary = 'fd'
+" }}}
+call plug#end()
+
+colorscheme base16-tomorrow
+
+" {{{ Writing / Markdown stuff
+let g:markdown_fenced_languages = ['ocaml', 'ruby', 'typescript', 'rust', 'bash=sh']
+"}}}
+
+" {{{ Gui settings
+if has('gui_running')
+  set guifont=ComicShannsMono\ Nerd\ Font:h17
+  set guicursor=a:ver100     " Set cursor to block shape
+  set visualbell             " Use visual bell instead of audible
+  set noerrorbells           " Disable error bells
+  set guioptions-=l           " Disable left scrollbar
+  set guioptions-=L           " Disable right scrollbar
+  set guioptions-=T           " Disable toolbar
+  set guioptions-=m           " Disable menu
+endif
+" }}}

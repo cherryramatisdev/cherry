@@ -1,0 +1,17 @@
+[files]
+scripts = { src = "./scripts", dest = "~/Scripts" }
+vimfiles = { src = "./vimfiles", dest = "~/.vim" }
+bashrc = { src = "./bashrc", dest = "~/.bashrc" }
+exrc = { src = "./exrc", dest = "~/.exrc" }
+tmux = { src = "./tmux.conf", dest = "~/.tmux.conf" }
+
+[dependencies]
+bash = { brew = true }
+tmux = { brew = true }
+reattach-to-user-namespace = { brew = true }
+eza = { brew = true }
+asdf = { brew = true }
+fzf = { brew = true }
+fd = { brew = true }
+rg = { brew = true }
+git-delta = { brew = true }
