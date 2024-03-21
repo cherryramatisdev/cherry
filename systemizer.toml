@@ -1,12 +1,15 @@
 [files]
 scripts = { src = "./scripts", dest = "~/Scripts" }
-vimfiles = { src = "./vimfiles", dest = "~/.vim" }
+vim = { src = "./vimfiles/vimrc", dest = "~/.vimrc" }
+nvim = { src ="./nvimfiles", dest = "~/.config/nvim" }
 bashrc = { src = "./bashrc", dest = "~/.bashrc" }
 exrc = { src = "./exrc", dest = "~/.exrc" }
-tmux = { src = "./tmux.conf", dest = "~/.tmux.conf" }
+tmux = { src = "./tmux", dest = "~/tmux" }
+tmux_conf = { src = "./tmux.conf", dest = "~/.tmux.conf" }
 
 [dependencies]
 bash = { brew = true }
+bash-completion = { brew = true }
 tmux = { brew = true }
 reattach-to-user-namespace = { brew = true }
 eza = { brew = true }
@@ -15,3 +18,10 @@ fzf = { brew = true }
 fd = { brew = true }
 rg = { brew = true }
 git-delta = { brew = true }
+lazygit = { brew = true }
+bat = { brew = true }
+discord = { cask = true }
+git = { brew = true }
+nvim = { brew = true, HEAD = true }
+"homebrew/cask-versions" = { tap = true }
+iterm2-beta = { cask = true }

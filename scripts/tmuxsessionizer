@@ -3,7 +3,7 @@
 if [[ $# -eq 1 ]]; then
   selected=$1
 else
-  selected=$(find ~/Repos ~/.config ~/Work/360Hub ~/Work/autocrit -maxdepth 1 \( -type l -o -type d \) | fzf)
+  selected=$(find ~/Repos ~/.config ~/Work/360Hub ~/Work/elleve ~/Work/autocrit -maxdepth 1 \( -type l -o -type d \) | fzf)
 fi
 
 if [[ -z $selected ]]; then
