@@ -21,6 +21,7 @@ set lazyredraw
 set hidden
 set nowrap
 set autoread
+set autowrite
 #set nosmartindent                       # TODO: remove this line if things go wrong
 set tabstop=2                            # a tab is two spaces
 set expandtab                            #
